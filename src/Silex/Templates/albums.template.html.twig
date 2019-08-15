@@ -1,0 +1,39 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+    <div class="content-cont" >
+        <div class="me-heading bg-white border-bottom">
+            <div class="row">
+                <div class="me-hl col-xs-12 col-md-9">
+                    <h1 class="content-heading">{{ 'tr_meliscodeexamplesilex_tool_title'|trans }}</h1>
+                    <p>{{ 'tr_meliscodeexamplesilex_tool_desc'|trans }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="tab-content innerAll spacing-x2">
+
+            <div class="bottom">
+                <table class="table table-striped table-primary dt-responsive nowrap no-footer dtr-inline" cellspacing="0" width="100%" role="grid" style="width: 100%;">
+                    <thead>
+                        <tr role="row">
+                            <th class="sorting" style="width: 98px;" >ID</th>
+                            <th class="sorting" style="width: 98px;" >Title</th>
+                            <th class="sorting" style="width: 98px;" >Date</th>
+                            <th class="sorting" style="width: 98px;" >No. of Songs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alb in albums %}
+                            <tr id="18" role="row" class="odd">
+                                <td style="">{{ alb.alb_id }}</td>
+                                <td style="">{{ alb.alb_name }}</td>
+                                <td style="">{{ alb.alb_date }}</td>
+                                <td style="">{{ alb.alb_song_num }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

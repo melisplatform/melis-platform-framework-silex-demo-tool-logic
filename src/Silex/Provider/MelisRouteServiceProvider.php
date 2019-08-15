@@ -13,14 +13,18 @@ use Silex\Application;
  */
 class MelisRouteServiceProvider implements BootableProviderInterface,ServiceProviderInterface
 {
-
-
     public function boot(Application $app)
     {
-        //Silex Routes configuration
-        $app->get('/melis-news', function () use ($app) {
-            $news = $app['MelisNews']->getNewsList();
-            return $app['twig']->render('news.html.twig',array("news" => $news));
+        //Add the module's twig template directory to the silex.
+        $twigTemplatePath = $app['twig.path'];
+        $twigPath = __DIR__.'/../Templates';
+        array_push($twigTemplatePath,$twigPath);
+        $app['twig.path'] = $twigTemplatePath;
+
+        $app->get('/albums', function () use ($app) {
+            $sql = "SELECT * FROM album ";
+            $albums = $app['db']->fetchAll($sql);
+            return $app['twig']->render('albums.template.html.twig',array("albums" => $albums));
         });
     }
 
