@@ -6,7 +6,7 @@ use Silex\Api\BootableProviderInterface;
 use Silex\Application;
 
 /**
- * Melis Route Service Provider
+ * MelisSilexDemoTooolLogicServiceProvider
  *
  * This provider is contains configuration for external twig templates, DB configurations, Routing for Silex
  * which are used in Melis Platform Framework Silex Demo Tool.
