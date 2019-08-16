@@ -27,7 +27,7 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
         /**
          * Getting DB configurations from Melis Platform
          */
-        $dbConfig = include __DIR__ .  '/../../../../../../config/autoload/platforms/' . getenv('MELIS_PLATFORM') . '.php';
+        $dbConfig = include __DIR__ .  '/../../../../../config/autoload/platforms/' . getenv('MELIS_PLATFORM') . '.php';
         $dsn = str_getcsv($dbConfig['db']['dsn'],";");
         foreach ($dsn as $key => $config){
             if(strpos($config, ':') !== false)
