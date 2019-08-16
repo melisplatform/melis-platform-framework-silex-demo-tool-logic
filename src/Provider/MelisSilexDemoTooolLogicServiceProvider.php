@@ -17,16 +17,23 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
     public function boot(Application $app)
     {
         /**
+         * TWIG TEMPLATE CONFIGURATION
          * Adding this module's (Melis Platform Silex Demo Tool Logic) twig template directory to the Silex.
          */
+        #Getting pre-configured twig template directory path/s
         $twigTemplatePath = $app['twig.path'];
+        #Getting the twig template directory path to be added
         $twigPath = __DIR__.'/../Templates';
+        #Merge the pre-configured twig template directory path/s with the new one.
         array_push($twigTemplatePath,$twigPath);
+        #Setting twig template directory paths
         $app['twig.path'] = $twigTemplatePath;
 
         /**
-         * Getting DB configurations from Melis Platform
+         * DATABASE CONFIGURATION
+         * Configuring Silex DB using Melis Platform DB configurations.
          */
+        #Getting DB configurations from Melis Platform
         $dbConfig = include __DIR__ .  '/../../../../../config/autoload/platforms/' . getenv('MELIS_PLATFORM') . '.php';
         $dsn = str_getcsv($dbConfig['db']['dsn'],";");
         foreach ($dsn as $key => $config){
@@ -38,10 +45,10 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
             $dbConfig['db'][$data[0]] = $data[1];
         }
 
-        /**
-         * Configuring Silex DB using Melis Platform DB configurations.
-         */
+        #Getting pre configured DB configurations
         $dbObtions = isset($app['db.options']) ? $app['db.options'] : (isset($app['dbs.options']) ? $app['dbs.options'] : []);
+
+        #Preparing DB configurations from the Melis Platform
         $melisDBOptions = array(
             'melis' => array(
                 'driver'   => 'pdo_mysql',
@@ -54,29 +61,34 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
         );
 
         if (count($dbObtions) == count($dbObtions, COUNT_RECURSIVE)){
-            /**
-             * Silex DB Configuration if Silex has SINGLE DB configuration
-             */
+            #Merging Silex DB Configuration if Silex has SINGLE DB configuration
             $melisDBOptions['silex'] = $dbObtions;
         }else{
-            /**
-             * Silex DB Configuration if Silex has MULTIPLE DB configuration
-             */
+            #Merging Silex DB Configuration if Silex has MULTIPLE DB configuration
             foreach(array_reverse($dbObtions[0],true) as $key => $dbObtion){
                 $melisDBOptions[$key] = $dbObtion;
             }
         }
-
         $melisDBOptions = array_reverse($melisDBOptions);
+
         $app['dbs.options'] = $melisDBOptions;
 
+
         /**
-         * Silex routing configuration for this silex module (Melis Platform Silex Demo Tool Logic).
+         * ROUTING CONFIGURATIONS
          */
+        #Silex routing DEMO configuration using data queries from database (MELIS PLATFORM DATABASE);
         $app->get('/albums', function () use ($app) {
             $sql = "SELECT * FROM album ";
             $albums = $app['dbs']['melis']->fetchAll($sql);
             return $app['twig']->render('albums.template.html.twig',array("albums" => $albums));
+        });
+
+        #Silex routing DEMO configuration using MELIS PLATFORM SERVICES;
+        $app->get('/melis-news', function () use ($app) {
+            $newsNewsService = $app['melis.services']->getService("MelisCmsNewsService");
+            $news = $newsNewsService->getNewsList();
+            return $app['twig']->render('news.template.html.twig',array("news" => $news));
         });
     }
 
