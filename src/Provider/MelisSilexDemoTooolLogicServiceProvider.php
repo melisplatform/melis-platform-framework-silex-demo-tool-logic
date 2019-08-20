@@ -102,8 +102,12 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
         $demoToolLogicFr = require __DIR__ .  '/../Translations/fr_FR.interface.php';
 
         #Merging with existing Translations
-        array_merge( !empty($app['translator.domains']['messages']['en']) ? $app['translator.domains']['messages']['en'] : [],$demoToolLogicEn);
-        array_merge( !empty($app['translator.domains']['messages']['fr']) ? $app['translator.domains']['messages']['fr'] : [],$demoToolLogicFr);
+        $demoToolLogicEn = array_merge( $demoToolLogicEn, !empty($app['translator.domains']['messages']['en']) ? $app['translator.domains']['messages']['en'] : []);
+        $demoToolLogicFr = array_merge( $demoToolLogicFr, !empty($app['translator.domains']['messages']['fr']) ? $app['translator.domains']['messages']['fr'] : []);
+        $app['twig'] = $app->extend('twig', function ($twig, $app) {
+            // add custom globals, filters, tags, ...
+            return $twig;
+        });
 
         #Setting Translations
         $app['translator.domains'] = array(
