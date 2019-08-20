@@ -28,6 +28,8 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
         array_push($twigTemplatePath,$twigPath);
         #Setting twig template directory paths
         $app['twig.path'] = $twigTemplatePath;
+        #Setting twig template to debug mode
+        $app['twig.options'] = array("debug" => true);
 
         /**
          * DATABASE CONFIGURATION
@@ -90,10 +92,37 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
             $news = $newsNewsService->getNewsList();
             return $app['twig']->render('news.template.html.twig',array("news" => $news));
         });
+
+
+        /**
+         * TRANSLATIONS CONFIGURATIONS
+         */
+        #Getting Translations from the Demo Logic translation directory
+        $demoToolLogicEn = require __DIR__ .  '/../Translations/en_EN.interface.php';
+        $demoToolLogicFr = require __DIR__ .  '/../Translations/fr_FR.interface.php';
+
+        #Merging with existing Translations
+        array_merge( !empty($app['translator.domains']['messages']['en']) ? $app['translator.domains']['messages']['en'] : [],$demoToolLogicEn);
+        array_merge( !empty($app['translator.domains']['messages']['fr']) ? $app['translator.domains']['messages']['fr'] : [],$demoToolLogicFr);
+
+        #Setting Translations
+        $app['translator.domains'] = array(
+            'messages' => array(
+                'en' =>  $demoToolLogicEn,
+                'fr' => $demoToolLogicFr,
+            )
+        );
+
+        #Setting fallback translations
+        $app['locale_fallbacks'] = array('en');
+        #Setting translation locale currently used by the Melis Platform
+        $app['locale'] = substr($_SESSION['meliscore']['melis-lang-locale'],0,2);
+
     }
 
     public function register(Container $app)
     {
 
     }
+
 }
