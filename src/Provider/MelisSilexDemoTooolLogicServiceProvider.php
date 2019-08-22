@@ -1,5 +1,6 @@
 <?php
 namespace MelisPlatformFrameworkSilexDemoToolLogic\Provider;
+use MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Silex\Api\BootableProviderInterface;
@@ -80,7 +81,7 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
          * ROUTING CONFIGURATIONS
          */
         #Silex routing DEMO configuration using data queries from database (MELIS PLATFORM DATABASE) and data from Melis Platform Services;
-        $app->get('/albums', function () use ($app) {
+        $app->get('/melis-news', function () use ($app) {
             #using MELIS PLATFORM SERVICES;
             $newsNewsService = $app['melis.services']->getService("MelisCmsNewsService");
             $news = $newsNewsService->getNewsList();
@@ -91,12 +92,8 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
             return $app['twig']->render('demo.template.html.twig',array("albums" => $albums,"news"=>$news));
         });
 
-        #Silex routing DEMO configuration using MELIS PLATFORM SERVICES;
-        $app->get('/melis-news', function () use ($app) {
-            $newsNewsService = $app['melis.services']->getService("MelisCmsNewsService");
-            $news = $newsNewsService->getNewsList();
-            return $app['twig']->render('news.template.html.twig',array("news" => $news));
-        });
+        #Silex routing DEMO configuration using a Silex Controller provider;
+        $app->mount('/', new SilexDemoController());
 
 
         /**
