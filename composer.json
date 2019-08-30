@@ -16,7 +16,6 @@
   ],
   "require": {
     "melisplatform/melis-cms-news": "*",
-    "melisplatform/melis-platform-framework-silex-demo-tool": "*",
     "melisplatform/melis-platform-framework-silex": "*"
   },
   "require-dev": {
