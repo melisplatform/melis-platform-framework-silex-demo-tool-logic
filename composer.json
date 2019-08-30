@@ -18,10 +18,6 @@
     "melisplatform/melis-cms-news": "*",
     "melisplatform/melis-platform-framework-silex": "*"
   },
-  "require-dev": {
-    "phpunit/phpunit": "~4.8",
-    "silex/silex": "~2.0"
-  },
   "autoload": {
         "psr-4": {
             "MelisPlatformFrameworkSilexDemoToolLogic\\": "src/"
