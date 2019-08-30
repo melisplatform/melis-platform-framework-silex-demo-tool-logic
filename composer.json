@@ -3,10 +3,10 @@
   "description": "A Silex framework demo tool logics",
   "type": "melisplatform-module",
   "license": "OSL-3.0",
-  "homepage": "Use this repo:",
+  "homepage": "https://github.com/melisplatform/melis-platform-framework-silex-demo-tool-logic",
   "support": {
     "source": "https://github.com/melisplatform/melis-platform-framework-silex-demo-tool-logic",
-    "issues": "/issues"
+    "issues": "https://github.com/melisplatform/melis-platform-framework-silex-demo-tool-logic/issues"
   },
   "keywords": [
     "cms",
