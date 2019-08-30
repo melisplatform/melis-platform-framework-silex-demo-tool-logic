@@ -15,7 +15,6 @@
     "module"
   ],
   "require": {
-    "melisplatform/melis-cms-news": "*",
     "melisplatform/melis-platform-framework-silex": "*"
   },
   "autoload": {
