@@ -60,14 +60,12 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
          * TRANSLATIONS CONFIGURATIONS
          */
         #Getting Translations from the Demo Logic translation directory
-        $demoToolLogicEn = require __DIR__ .  '/../Translations/en_EN.interface.php';
-        $demoToolLogicFr = require __DIR__ .  '/../Translations/fr_FR.interface.php';
+        $demoToolLogicEn = file_exists(__DIR__ .  '/../Translations/en_EN.interface.php') ? require __DIR__ .  '/../Translations/en_EN.interface.php' : [];;
+        $demoToolLogicFr = file_exists(__DIR__ .  '/../Translations/fr_FR.interface.php') ? require __DIR__ .  '/../Translations/fr_FR.interface.php' : [];;
 
         #Merging with existing Translations
         $demoToolLogicEn = array_merge( $demoToolLogicEn, !empty($app['translator.domains']['messages']['en']) ? $app['translator.domains']['messages']['en'] : []);
         $demoToolLogicFr = array_merge( $demoToolLogicFr, !empty($app['translator.domains']['messages']['fr']) ? $app['translator.domains']['messages']['fr'] : []);
-
-
 
         #Setting Translations
         $app['translator.domains'] = array(
