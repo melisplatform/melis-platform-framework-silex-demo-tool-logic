@@ -46,10 +46,11 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
             $newsNewsService = $app['melis.services']->getService("MelisCmsNewsService");
             $news = $newsNewsService->getNewsList();
 
-            #using Melis Database;
-            $sql = "SELECT * FROM album ";
-            $albums = $app['dbs']['melis']->fetchAll($sql);
-            return $app['twig']->render('demo.template.html.twig',array("albums" => $albums,"news"=>$news));
+            $albums = [];
+//            #using Melis Database;
+//            $sql = "SELECT * FROM album ";
+//            $albums = $app['dbs']['melis']->fetchAll($sql);
+//            return $app['twig']->render('demo.template.html.twig',array("albums" => $albums,"news"=>$news));
         });
 
         #Silex routing DEMO configuration using a Silex Controller provider;

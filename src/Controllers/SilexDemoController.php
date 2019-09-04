@@ -17,9 +17,10 @@ class SilexDemoController implements ControllerProviderInterface {
         $newsNewsService = $app['melis.services']->getService("MelisCmsNewsService");
         $news = $newsNewsService->getNewsList();
 
-        #using Melis Database;
-        $sql = "SELECT * FROM album ";
-        $albums = $app['dbs']['melis']->fetchAll($sql);
+        $albums = [];
+//        #using Melis Database;
+//        $sql = "SELECT * FROM album ";
+//        $albums = $app['dbs']['melis']->fetchAll($sql);
 
         return $app['twig']->render('demo.template.html.twig',array("albums" => $albums,"news"=>$news));
     }
