@@ -8,7 +8,7 @@ class SilexDemoController implements ControllerProviderInterface {
 
     public function connect(Application $app) {
         $factory=$app['controllers_factory'];
-        $factory->get('/silex-demo','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexDemo');
+        $factory->get('/silex-list','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexDemo');
         return $factory;
     }
 
