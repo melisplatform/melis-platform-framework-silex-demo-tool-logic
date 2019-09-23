@@ -78,7 +78,8 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
         #Setting fallback translations
         $app['locale_fallbacks'] = array('en');
         #Setting translation locale currently used by the Melis Platform
-        $app['locale'] = substr($_SESSION['meliscore']['melis-lang-locale'],0,2);
+        if(isset($_SESSION['meliscore']))
+            $app['locale'] = substr($_SESSION['meliscore']['melis-lang-locale'],0,2);
 
     }
 
