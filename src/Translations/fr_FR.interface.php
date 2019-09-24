@@ -6,6 +6,7 @@
         'tr_meliscodeexamplesilex_album_title' => 'Titre',
         'tr_meliscodeexamplesilex_album_date' => 'Date',
         'tr_meliscodeexamplesilex_album_songs' => 'Chansons',
+        'tr_meliscodeexamplesilex_tool_new_album' => 'Nouvel Album',
         'tr_meliscodeexamplesilex_tool_title' => 'Un embryon d\'outil fait en Silex',
         'tr_meliscodeexamplesilex_tool_desc' => 'Ce outil de demo a pour but de montrer comment utiliser le framework Silex à l\'intérieur de Melis Platform, et ne pas être bloqué en ZF.',
         'tr_meliscodeexamplesilex_tool_db_connection_desc' => 'Le tableau ci-dessous affiche les données extraites de la base de données en utilisant Silex.',

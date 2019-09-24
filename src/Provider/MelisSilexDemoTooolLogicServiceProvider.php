@@ -41,15 +41,16 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
          * ROUTING CONFIGURATIONS
          */
         #Silex routing DEMO configuration using data queries from database (MELIS PLATFORM DATABASE) and data from Melis Platform Services;
-        $app->get('/melis-news-albums', function () use ($app) {
+        $app->get('/melis-lang-albums', function () use ($app) {
             #using MELIS PLATFORM SERVICES;
-            $newsNewsService = $app['melis.services']->getService("MelisCmsNewsService");
-            $news = $newsNewsService->getNewsList();
+            $langSvc = $app['melis.services']->getService("MelisEngineLang");
+            $langs = $langSvc->getAvailableLanguages();
 
             #using Melis Database;
             $sql = "SELECT * FROM album ";
             $albums = $app['dbs']['melis']->fetchAll($sql);
-            return $app['twig']->render('demo.template.html.twig',array("albums" => $albums,"news"=>$news));
+
+            return $app['twig']->render('demo.template.html.twig',array("albums" => $albums,"langs"=>$langs));
         });
 
         #Silex routing DEMO configuration using a Silex Controller provider;
