@@ -11,4 +11,5 @@
         'tr_meliscodeexamplesilex_tool_desc' => 'Ce outil de demo a pour but de montrer comment utiliser le framework Silex à l\'intérieur de Melis Platform, et ne pas être bloqué en ZF.',
         'tr_meliscodeexamplesilex_tool_db_connection_desc' => 'Le tableau ci-dessous affiche les données extraites de la base de données en utilisant Silex.',
         'tr_meliscodeexamplesilex_tool_melis_services_desc' => 'Le tableau ci-dessous affiche les données extraites des services de Melis Platform en utilisant Silex.',
+        'tr_melisplatformsilexdemotool_plugin_name' => 'Silex Plugin',
     ];
