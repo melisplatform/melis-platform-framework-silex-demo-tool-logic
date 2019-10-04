@@ -47,7 +47,7 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
             $news = $newsNewsService->getNewsList();
 
             #using Melis Database;
-            $sql = "SELECT * FROM album ";
+            $sql = "SELECT * FROM melis_demo_album ";
             $albums = $app['dbs']['melis']->fetchAll($sql);
             return $app['twig']->render('demo.template.html.twig',array("albums" => $albums,"news"=>$news));
         });
