@@ -2,6 +2,9 @@
     return [
 		'tr_meliscodeexamplesilex_title' => 'Outil Demo en Silex',
 		'tr_meliscodeexamplesilex_desc' => 'Outil Demo en Silex',
+        'tr_meliscodeexamplesilex_lang_id' => 'ID',
+        'tr_meliscodeexamplesilex_lang_locale' => 'lieu',
+        'tr_meliscodeexamplesilex_lang_name' => 'Nom',
         'tr_meliscodeexamplesilex_album_id' => 'ID',
         'tr_meliscodeexamplesilex_album_title' => 'Titre',
         'tr_meliscodeexamplesilex_album_date' => 'Date',
