@@ -19,7 +19,7 @@ class SilexDemoController implements ControllerProviderInterface {
         $langs = $langSvc->getAvailableLanguages();
 
         #using Melis Database;
-        $sql = "SELECT * FROM album ";
+        $sql = "SELECT * FROM melis_demo_album ";
         $albums = $app['dbs']['melis']->fetchAll($sql);
 
         return $app['twig']->render('demo.template.html.twig',array("albums" => $albums,"langs"=>$langs));
@@ -27,7 +27,7 @@ class SilexDemoController implements ControllerProviderInterface {
     public function silexPlugin(Application $app) {
 
         #using Melis Database;
-        $sql = "SELECT * FROM album ";
+        $sql = "SELECT * FROM melis_demo_album ";
         $albums = $app['dbs']['melis']->fetchAll($sql);
 
         return $app['twig']->render('plugin.template.html.twig',array("albums" => $albums));
