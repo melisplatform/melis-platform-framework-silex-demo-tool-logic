@@ -37,8 +37,8 @@
                 <p>{{ 'tr_meliscodeexamplesilex_tool_melis_services_desc'|trans }}</p>
                 <pre>
 $app->register(new MelisServiceProvider());
-$newsNewsService = $app['melis.services']->getService("MelisCmsNewsService");
-$news = $newsNewsService->getNewsList();
+$langSvc = $app['melis.services']->getService("MelisEngineLang");
+$langs = $langSvc->getAvailableLanguages();
                 </pre>
                 <table class="table table-striped table-primary dt-responsive nowrap no-footer dtr-inline"
                        cellspacing="0" width="100%" role="grid" style="width: 100%;">
