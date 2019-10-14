@@ -54,7 +54,7 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
         });
 
         #Silex routing DEMO configuration using a Silex Controller provider;
-        $app->mount('melis/', new SilexDemoController());
+        $app->mount('', new SilexDemoController());
 
 
         /**
