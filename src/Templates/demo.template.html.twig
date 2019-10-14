@@ -24,17 +24,22 @@
                     <tr role="row">
                         <th class="sorting" style="width: 98px;">{{ 'tr_meliscodeexamplesilex_album_id'|trans }}</th>
                         <th class="sorting" style="width: 98px;">{{ 'tr_meliscodeexamplesilex_album_title'|trans }}</th>
-                        <th class="sorting" style="width: 98px;">{{ 'tr_meliscodeexamplesilex_album_date'|trans }}</th>
                         <th class="sorting" style="width: 98px;">{{ 'tr_meliscodeexamplesilex_album_songs'|trans }}</th>
+                        <th class="sorting" style="width: 98px;">{{ 'tr_meliscodeexamplesilex_album_date'|trans }}</th>
+                        <th class="sorting" style="width: 98px;">{{ 'tr_meliscodeexamplesilex_action'|trans }}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {% for alb in albums %}
-                        <tr id="18" role="row" class="odd">
+                        <tr id="album_{{ alb.alb_id }}" role="row" class="odd">
                             <td style="">{{ alb.alb_id }}</td>
                             <td style="">{{ alb.alb_name }}</td>
-                            <td style="">{{ alb.alb_date }}</td>
                             <td style="">{{ alb.alb_song_num }}</td>
+                            <td style="">{{ alb.alb_date }}</td>
+                            <td style="">
+                                <button class="btn btn-success btn_meliscodeexamplesilex_edit" data-albumid="{{ alb.alb_id }}" title="Edit"><i class="fa fa-pencil"></i></button>
+                                <button class="btn btn-success btn_meliscodeexamplesilex_delete" data-albumid="{{ alb.alb_id }}" title="Delete"><i class="fa fa-times"></i></button>
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
