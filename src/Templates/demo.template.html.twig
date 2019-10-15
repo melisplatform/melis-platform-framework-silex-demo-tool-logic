@@ -9,9 +9,9 @@
                     <p>{{ 'tr_meliscodeexamplesilex_tool_desc'|trans }}</p>
                 </div>
                 <div class="me-hr col-xs-12 col-sm-4 col-md-3">
-                    <button data-toggle="modal" id="meliscodeexamplesilex_tool_new_album" class="btn btn-success">
-                        <i class="fa fa-plus"></i> {{ 'tr_meliscodeexamplesilex_tool_new_album'|trans }}
-                    </button>
+                    {#<button data-toggle="modal" id="meliscodeexamplesilex_tool_new_album" class="btn btn-success">#}
+                        {#<i class="fa fa-plus"></i> {{ 'tr_meliscodeexamplesilex_tool_new_album'|trans }}#}
+                    {#</button>#}
                 </div>
             </div>
         </div>
@@ -26,7 +26,7 @@
                         <th class="sorting" style="width: 98px;">{{ 'tr_meliscodeexamplesilex_album_title'|trans }}</th>
                         <th class="sorting" style="width: 98px;">{{ 'tr_meliscodeexamplesilex_album_songs'|trans }}</th>
                         <th class="sorting" style="width: 98px;">{{ 'tr_meliscodeexamplesilex_album_date'|trans }}</th>
-                        <th class="sorting" style="width: 98px;">{{ 'tr_meliscodeexamplesilex_action'|trans }}</th>
+                        {#<th class="sorting" style="width: 98px;">{{ 'tr_meliscodeexamplesilex_action'|trans }}</th>#}
                     </tr>
                     </thead>
                     <tbody>
@@ -36,10 +36,10 @@
                             <td style="">{{ alb.alb_name }}</td>
                             <td style="">{{ alb.alb_song_num }}</td>
                             <td style="">{{ alb.alb_date }}</td>
-                            <td style="">
-                                <button class="btn btn-success btn_meliscodeexamplesilex_edit" data-albumid="{{ alb.alb_id }}" title="Edit"><i class="fa fa-pencil"></i></button>
-                                <button class="btn btn-success btn_meliscodeexamplesilex_delete" data-albumid="{{ alb.alb_id }}" title="Delete"><i class="fa fa-times"></i></button>
-                            </td>
+                            {#<td style="">#}
+                                {#<button class="btn btn-success btn_meliscodeexamplesilex_edit" data-albumid="{{ alb.alb_id }}" title="Edit"><i class="fa fa-pencil"></i></button>#}
+                                {#<button class="btn btn-success btn_meliscodeexamplesilex_delete" data-albumid="{{ alb.alb_id }}" title="Delete"><i class="fa fa-times"></i></button>#}
+                            {#</td>#}
                         </tr>
                     {% endfor %}
                     </tbody>
