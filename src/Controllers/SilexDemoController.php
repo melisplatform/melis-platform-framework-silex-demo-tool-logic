@@ -24,12 +24,13 @@ class SilexDemoController implements ControllerProviderInterface {
 
     public function silexDemo(Application $app) {
         #using MELIS PLATFORM SERVICES;
-        $langSvc = $app['melis.services']->getService("MelisEngineLang");
-        $langs = $langSvc->getAvailableLanguages();
-
+        $langSvc = $app['melis.services']->getService("MelisCoreTableLang");
+        $langs = $langSvc->fetchAll();
+        
         #using Melis Database;
         $sql = "SELECT * FROM melis_demo_album ";
         $albums = $app['dbs']['melis']->fetchAll($sql);
+
 
         return $app['twig']->render('demo.template.html.twig',array("albums" => $albums,"langs"=>$langs));
     }
