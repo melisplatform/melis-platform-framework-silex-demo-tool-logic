@@ -42,18 +42,14 @@ class SilexDemoController implements ControllerProviderInterface {
     }
 
     public function silexSaveAlbum(Application $app, Request $request) {
-        $params = $request->request->get("parameters");
-
         if(!empty($request->get("alb_id"))){
             $sql = "UPDATE melis_demo_album SET alb_name = ?, alb_song_num = ? WHERE alb_id = ?";
-            $album = $app['dbs']['melis']->executeUpdate($sql, array($request->get("alb_name"), $request->get("alb_song_num"), $request->get("alb_id")));
+            $app['dbs']['melis']->executeUpdate($sql, array($request->get("alb_name"), $request->get("alb_song_num"), $request->get("alb_id")));
         }else {
-            $sql = "INSERT INTO melis_demo_album (alb_name, alb_song_num) VALUES (?,?)";
-            $album = $app['dbs']['melis']->executeQuery($sql, array($request->get("alb_name"), $request->get("alb_song_num")));
-//            $app['dbs']['melis']->insert("melis_demo_album",array(
-//                "alb_name" => $request->get("alb_name"),
-//                "alb_song_num" => $request->get("alb_song_num")
-//            ));
+            $app['dbs']['melis']->insert("melis_demo_album",array(
+                "alb_name" => $request->get("alb_name"),
+                "alb_song_num" => $request->get("alb_song_num")
+            ));
         }
         return new JsonResponse(array("success" => 1,"title"=>"Create Album", "message" => "Album Saved", "errors" => []));
 
