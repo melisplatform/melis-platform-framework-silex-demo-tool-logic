@@ -15,7 +15,7 @@
     "module"
   ],
   "require": {
-    "melisplatform/melis-platform-framework-silex-demo-tool": "^3.1"
+    "melisplatform/melis-platform-framework-silex": "*"
   },
   "autoload": {
         "psr-4": {

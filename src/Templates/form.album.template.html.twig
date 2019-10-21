@@ -1,0 +1,67 @@
+{% block content %}
+    <div>
+        <div class="modal fade" id="melis_silex_create_album_modal">
+            <div class="modal-dialog" role="modal">
+                <div class="modal-content" id="id_melis_silex_create_album_modal_content">
+                    <div class="modal-body padding-none">
+                        <div class="wizard">
+                            <div class="widget widget-tabs widget-tabs-double widget-tabs-responsive margin-none border-none">
+                                <div class="widget-head">
+                                    <ul class="nav nav-tabs">
+                                        <li class="active"><a href="#melis_silex_create_album_tab"
+                                                              class="glyphicons plus" data-toggle="tab"
+                                                              aria-expanded="true">
+                                                <i></i> Create Album</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="widget-body innerAll inner-2x">
+                                    <div class="tab-content">
+                                        <div class="tab-pane active" id="melis_silex_create_album_tab_pane">
+                                            <form method="POST" id="melis_silex_album_form">
+                                                <div class="form-group ">
+                                                    <input type="hidden" class="form-control" name="alb_id"
+                                                           id="alb_id" hidden
+                                                           value="{{ alb.alb_id }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="alb_name">
+                                                        {{ 'tr_meliscodeexamplesilex_album_title'|trans }}
+                                                        <i class="fa fa-info-circle fa-lg pull-right tip-info"
+                                                           data-toggle="tooltip" data-placement="left" title=""
+                                                           data-original-title="{{ 'tr_meliscodeexamplesilex_album_title'|trans }}"></i>
+                                                    </label>
+                                                    <input type="text" class="form-control" name="alb_name"
+                                                           id="alb_name" placeholder="{{ 'tr_meliscodeexamplesilex_album_title'|trans }}" value="{{ alb.alb_name }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="alb_song_num">
+                                                        {{ 'tr_meliscodeexamplesilex_album_songs'|trans }}
+                                                        <i class="fa fa-info-circle fa-lg pull-right tip-info"
+                                                           data-toggle="tooltip" data-placement="left" title=""
+                                                           data-original-title="{{ 'tr_meliscodeexamplesilex_album_songs'|trans }}"></i>
+                                                    </label>
+                                                    <input type="text" class="form-control" name="alb_song_num"
+                                                           id="alb_song_num" placeholder="{{ 'tr_meliscodeexamplesilex_album_songs'|trans }}" value="{{ alb.alb_song_num }}">
+                                                </div>
+                                                <div align="right">
+                                                    <button data-dismiss="modal" class="btn btn-danger pull-left">
+                                                        <i class="fa fa-times"></i> {{ 'tr_meliscodeexamplesilex_close'|trans }}
+                                                    </button>
+                                                    <button type="submit" class="btn btn-success" id="btn-save-theme">
+                                                        <i class="fa fa-save"></i> {{ 'tr_meliscodeexamplesilex_save'|trans }}
+                                                    </button>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

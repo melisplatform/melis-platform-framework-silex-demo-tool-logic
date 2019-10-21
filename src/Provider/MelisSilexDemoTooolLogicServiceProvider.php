@@ -41,19 +41,20 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
          * ROUTING CONFIGURATIONS
          */
         #Silex routing DEMO configuration using data queries from database (MELIS PLATFORM DATABASE) and data from Melis Platform Services;
-        $app->get('/melis-news-albums', function () use ($app) {
+        $app->get('/melis-lang-albums', function () use ($app) {
             #using MELIS PLATFORM SERVICES;
-            $newsNewsService = $app['melis.services']->getService("MelisCmsNewsService");
-            $news = $newsNewsService->getNewsList();
+            $langSvc = $app['melis.services']->getService("MelisEngineLang");
+            $langs = $langSvc->getAvailableLanguages();
 
             #using Melis Database;
-            $sql = "SELECT * FROM album ";
+            $sql = "SELECT * FROM melis_demo_album ";
             $albums = $app['dbs']['melis']->fetchAll($sql);
-            return $app['twig']->render('demo.template.html.twig',array("albums" => $albums,"news"=>$news));
+
+            return $app['twig']->render('demo.template.html.twig',array("albums" => $albums,"langs"=>$langs));
         });
 
         #Silex routing DEMO configuration using a Silex Controller provider;
-        $app->mount('/', new SilexDemoController());
+        $app->mount('', new SilexDemoController());
 
 
         /**
@@ -78,7 +79,8 @@ class MelisSilexDemoTooolLogicServiceProvider implements BootableProviderInterfa
         #Setting fallback translations
         $app['locale_fallbacks'] = array('en');
         #Setting translation locale currently used by the Melis Platform
-        $app['locale'] = substr($_SESSION['meliscore']['melis-lang-locale'],0,2);
+        if(isset($_SESSION['meliscore']))
+            $app['locale'] = substr($_SESSION['meliscore']['melis-lang-locale'],0,2);
 
     }
 
