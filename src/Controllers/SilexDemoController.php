@@ -1,11 +1,11 @@
 <?php
 namespace MelisPlatformFrameworkSilexDemoToolLogic\Controllers;
 
+use MelisPlatformFrameworkSilex\Service\MelisPlatformToolSilexService;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class SilexDemoController implements ControllerProviderInterface {
 
@@ -14,6 +14,7 @@ class SilexDemoController implements ControllerProviderInterface {
         $factory->get('/silex-plugin','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexPlugin');
         $factory->get('/melis/silex-list','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexDemo');
         $factory->get('/melis/silex-album-form','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexAlbumForm');
+        $factory->post('/melis/silex-table-fetch-album','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexFetchAlbum');
         $factory->post('/melis/silex-save-album','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexSaveAlbum');
         $factory->post('/melis/silex-edit-album','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexEditAlbum');
         $factory->post('/melis/silex-delete-album','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexDeleteAlbum');
@@ -22,18 +23,127 @@ class SilexDemoController implements ControllerProviderInterface {
         return $factory;
     }
 
+    /**
+     *
+     * @param Application $app
+     * @return mixed
+     *
+     * Renders the Silex Demo Tool Album content view.
+     */
+
     public function silexDemo(Application $app) {
-        #using MELIS PLATFORM SERVICES;
+        //getting data from melis db using MELIS PLATFORM SERVICES;
         $langSvc = $app['melis.services']->getService("MelisEngineLang");
         $langs = $langSvc->getAvailableLanguages();
 
-        #using Melis Database;
-        $sql = "SELECT * FROM melis_demo_album ";
-        $albums = $app['dbs']['melis']->fetchAll($sql);
+        //This block of code below is the configuration of the data table that is same as the melis platform
 
-        return $app['twig']->render('demo.template.html.twig',array("albums" => $albums,"langs"=>$langs));
+        //getting config
+        $config = include_once __DIR__."/../../config/MelisPlatfoformSilexAlbumTable.config.php";
+
+        //instantiating the class which contains the modified function for configuring the Data Table in Silex
+        $melisPlatformToolSilexSvc = new MelisPlatformToolSilexService($app);
+
+        //This will output the JS script for the that will target the Table in the twig template and turn it into a Data Table similar  to melis modules.
+        $dataTableScript = $melisPlatformToolSilexSvc->getDataTableConfiguration($config['table'],"#silexDemoToolAlbumTable",false,null,['order' => '[[ 0, "desc" ]]']);
+
+        return $app['twig']->render('demo.template.html.twig',array("langs" => $langs, "dataTableScript" => $dataTableScript));
     }
 
+    /**
+     * @param Application $app
+     * @param Request $request
+     * @return JsonResponse
+     *
+     * fetch the list of albums from melis DB for the data table.
+     */
+    public function silexFetchAlbum(Application $app, Request $request){
+
+        $tableData = array();
+
+        //Data table config
+        $config = include_once __DIR__."/../../config/MelisPlatfoformSilexAlbumTable.config.php";
+
+        $params = $request->request->all();
+
+        // sorting ASC or DESC
+        $sortOrder = $params['order'][0]['dir'] ?? null;
+        // column to sort
+        $selCol    = $params['order'] ?? null;
+        $colId     = array_keys($config['table']['columns']);
+        $selCol    = $colId[$selCol[0]['column']] ?? null;
+        // number of displayed item per page
+        $draw      = $params['draw'] ?? null;
+        // pagination start
+        $start     = $params['start'] ?? null;
+        // drop down limit
+        $length    = $params['length'] ?? null;
+        // search value from the table
+        $search    = $params['search']['value'] ?? null;
+        // get all searchable columns from the config
+        $searchableCols = $config['table']['searchables'] ?? [];
+        // get data from the service
+
+        // fetching albums depending on the filters applied to the table
+        $qb = new \Doctrine\DBAL\Query\QueryBuilder($app['dbs']['melis']);
+        $qb->select("*");
+        $qb->from("melis_demo_album");
+        if (! empty($searchableCols) && !empty($search)){
+            foreach ($searchableCols as $idx => $col) {
+                $expr = $qb->expr();
+                $qb->orWhere($expr->like($col, "'%" . $search . "%'"));
+            }
+        }
+        $qb->setFirstResult($start)
+            ->setMaxResults($length)
+            ->orderBy($selCol,$sortOrder);
+
+        $data = $qb->execute()->fetchAll();
+
+        if (! empty($searchableCols) && !empty($search)) {
+            $tmpDataCount = count($data);
+        }else{
+            $sql = "SELECT * FROM melis_demo_album ";
+            $tmpDataCount = count($app['dbs']['melis']->fetchAll($sql));
+        }
+        $data = [
+            'data' => $data,
+            'dataCount' => $tmpDataCount
+        ];
+
+        // get total count of the data in the db
+        $dataCount = $data['dataCount'];
+        $albumData = $data['data'];
+        // organized data
+        $c = 0;
+
+        foreach($albumData as $data){
+
+            $data = (object)$data;
+
+            $tableData[$c]['DT_RowId'] = $data->alb_id;
+            $tableData[$c]['alb_id'] = $data->alb_id;
+            $tableData[$c]['alb_name'] = $data->alb_name;
+            $tableData[$c]['alb_date'] = $data->alb_date;
+            $tableData[$c]['alb_song_num'] = $data->alb_song_num;
+            $c++;
+        }
+
+        return new JsonResponse(array(
+            'draw' => $draw,
+            'recordsTotal' => $dataCount,
+            'recordsFiltered' => $dataCount,
+            'data' => $tableData
+        ));
+    }
+
+    /**
+     * @param Application $app
+     * @param Request $request
+     * @return mixed
+     *
+     * render the silex demo tool album form modal for creating/deleting
+     */
     public function silexAlbumForm(Application $app, Request $request) {
 
         $params = !empty($request->query->get("parameters")) ? $request->query->get("parameters") : [];
@@ -41,11 +151,21 @@ class SilexDemoController implements ControllerProviderInterface {
         return $app['twig']->render('form.album.template.html.twig',array('alb' => $params));
     }
 
+    /**
+     * @param Application $app
+     * @param Request $request
+     * @return JsonResponse
+     *
+     * save the album either creating or editing
+     */
     public function silexSaveAlbum(Application $app, Request $request) {
+
         if(!empty($request->get("alb_id"))){
+            // updating album
             $sql = "UPDATE melis_demo_album SET alb_name = ?, alb_song_num = ? WHERE alb_id = ?";
             $app['dbs']['melis']->executeUpdate($sql, array($request->get("alb_name"), $request->get("alb_song_num"), $request->get("alb_id")));
         }else {
+            // creating album
             $app['dbs']['melis']->insert("melis_demo_album",array(
                 "alb_name" => $request->get("alb_name"),
                 "alb_song_num" => $request->get("alb_song_num")
@@ -55,8 +175,16 @@ class SilexDemoController implements ControllerProviderInterface {
 
     }
 
+    /**
+     * @param Application $app
+     * @param Request $request
+     * @return JsonResponse
+     *
+     * render the silex demo tool album form modal for editing
+     */
     public function silexEditAlbum(Application $app, Request $request) {
 
+        // fetching data of album to be deleted
         $sql = 'SELECT * FROM melis_demo_album WHERE alb_id = :id';
         $album = $app['dbs']['melis']->fetchAssoc($sql, array(
             'id' => $request->get('id'),
@@ -65,6 +193,13 @@ class SilexDemoController implements ControllerProviderInterface {
 
     }
 
+    /**
+     * @param Application $app
+     * @param Request $request
+     * @return JsonResponse
+     *
+     * fetching the album data to be deleted
+     */
     public function silexDeleteAlbum(Application $app, Request $request) {
 
         $app['dbs']['melis']->delete("melis_demo_album",array(
@@ -75,6 +210,12 @@ class SilexDemoController implements ControllerProviderInterface {
 
     }
 
+    /**
+     * @param Application $app
+     * @return JsonResponse
+     *
+     * fetch all the translation using silex
+     */
     public function getTranslations(Application $app) {
 
         $locale = empty( $app['locale']) ? "en" :  $app['locale'];
@@ -84,6 +225,12 @@ class SilexDemoController implements ControllerProviderInterface {
 
     }
 
+    /**
+     * @param Application $app
+     * @return mixed
+     *
+     * fetch album data from melis DB for the silex demo tool templating plugin
+     */
     public function silexPlugin(Application $app) {
 
         #using Melis Database;
