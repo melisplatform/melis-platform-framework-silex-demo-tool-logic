@@ -14,7 +14,7 @@ class SilexDemoController implements ControllerProviderInterface {
         $factory->get('/silex-plugin','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexPlugin');
         $factory->get('/melis/silex-list','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexDemo');
         $factory->get('/melis/silex-album-form','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexAlbumForm');
-        $factory->post('/melis/silex-table-fetch-album','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexFetchAlbum');
+        $factory->post('/melis/silex-table-fetch-album','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexFetchAlbums');
         $factory->post('/melis/silex-save-album','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexSaveAlbum');
         $factory->post('/melis/silex-edit-album','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexEditAlbum');
         $factory->post('/melis/silex-delete-album','MelisPlatformFrameworkSilexDemoToolLogic\Controllers\SilexDemoController::silexDeleteAlbum');
@@ -57,7 +57,7 @@ class SilexDemoController implements ControllerProviderInterface {
      *
      * fetch the list of albums from melis DB for the data table.
      */
-    public function silexFetchAlbum(Application $app, Request $request){
+    public function silexFetchAlbums(Application $app, Request $request){
 
         $tableData = array();
 
@@ -142,7 +142,7 @@ class SilexDemoController implements ControllerProviderInterface {
      * @param Request $request
      * @return mixed
      *
-     * render the silex demo tool album form modal for creating/deleting
+     * render the silex demo tool album form modal for creating/editing
      */
     public function silexAlbumForm(Application $app, Request $request) {
 
@@ -160,18 +160,46 @@ class SilexDemoController implements ControllerProviderInterface {
      */
     public function silexSaveAlbum(Application $app, Request $request) {
 
+        $message = "tr_meliscodeexamplesilex_tool_save_album_ko";
+
         if(!empty($request->get("alb_id"))){
             // updating album
+            $title = $app['translator']->trans("tr_meliscodeexamplesilex_tool_new_album");
+
             $sql = "UPDATE melis_demo_album SET alb_name = ?, alb_song_num = ? WHERE alb_id = ?";
-            $app['dbs']['melis']->executeUpdate($sql, array($request->get("alb_name"), $request->get("alb_song_num"), $request->get("alb_id")));
+            $success = $app['dbs']['melis']->executeUpdate($sql, array($request->get("alb_name"), $request->get("alb_song_num"), $request->get("alb_id")));
+
+            if($success > 0){
+                $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_save_album_ok");
+                $success = 1;
+            }
+
+            $id = $request->get("alb_id");
+            $this->melisLog($app,$title,$message,$success,"SILEX_ALBUM_EDIT",$id);
         }else {
             // creating album
-            $app['dbs']['melis']->insert("melis_demo_album",array(
+            $title = $app['translator']->trans("tr_meliscodeexamplesilex_tool_edit_album");
+
+            $success = $app['dbs']['melis']->insert("melis_demo_album",array(
                 "alb_name" => $request->get("alb_name"),
                 "alb_song_num" => $request->get("alb_song_num")
             ));
+
+            if($success > 0){
+                $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_save_album_ok");
+                $success = 1;
+            }
+
+            $id = $app['dbs']['melis']->lastInsertId();
+            $this->melisLog($app,$title,$message,$success,"SILEX_ALBUM_CREATE",$id);
         }
-        return new JsonResponse(array("success" => 1,"title"=>"Create Album", "message" => "Album Saved", "errors" => []));
+
+        return new JsonResponse(array(
+            "success" => $success,
+            "title" => $title,
+            "message" => $message,
+            "errors" => []
+        ));
 
     }
 
@@ -180,7 +208,7 @@ class SilexDemoController implements ControllerProviderInterface {
      * @param Request $request
      * @return JsonResponse
      *
-     * render the silex demo tool album form modal for editing
+     * fetching data of the album to be edited
      */
     public function silexEditAlbum(Application $app, Request $request) {
 
@@ -189,7 +217,13 @@ class SilexDemoController implements ControllerProviderInterface {
         $album = $app['dbs']['melis']->fetchAssoc($sql, array(
             'id' => $request->get('id'),
         ));
-        return new JsonResponse(array("success" => 1,"title"=>"Edit Album","album" => $album, "message" => "Album Edited", "errors" => []));
+
+        $success = count($album) > 1 ? 1 : 0;
+
+        return new JsonResponse(array(
+            "success" => $success,
+            "album" => $album,
+        ));
 
     }
 
@@ -202,11 +236,27 @@ class SilexDemoController implements ControllerProviderInterface {
      */
     public function silexDeleteAlbum(Application $app, Request $request) {
 
-        $app['dbs']['melis']->delete("melis_demo_album",array(
+        $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_delete_album_ko");
+        $title = $app['translator']->trans("tr_meliscodeexamplesilex_album_delete");
+
+        $success = $app['dbs']['melis']->delete("melis_demo_album",array(
             "alb_id" => $request->get("id")
         ));
 
-        return new JsonResponse(array("success" => 1,"title"=>"Delete Album", "message" => "Album Deleted", "errors" => []));
+        if($success > 0){
+            $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_delete_album_ok");
+            $success = 1;
+        }
+
+        $id = $request->get('id');
+        $this->melisLog($app,$title,$message,$success,"SILEX_ALBUM_CREATE",$id);
+
+        return new JsonResponse(array(
+            "success" => $success,
+            "title" => $title,
+            "message" => $message,
+            "errors" => []
+        ));
 
     }
 
@@ -221,7 +271,10 @@ class SilexDemoController implements ControllerProviderInterface {
         $locale = empty( $app['locale']) ? "en" :  $app['locale'];
         $translation = $app['translator.domains']['messages'][$locale];
 
-        return new JsonResponse(array("success" => 1, "translation" => $translation));
+        return new JsonResponse(array(
+            "success" => 1,
+            "translation" => $translation
+        ));
 
     }
 
@@ -238,5 +291,20 @@ class SilexDemoController implements ControllerProviderInterface {
         $albums = $app['dbs']['melis']->fetchAll($sql);
 
         return $app['twig']->render('plugin.template.html.twig',array("albums" => $albums));
+    }
+
+    /**
+     * @param $app Application silex application
+     * @param $title string log title
+     * @param $message string log message
+     * @param $success string action status
+     * @param $typeCode string action log code
+     * @param $itemId int id of the modified or created data
+     *
+     * logs action made in silex demo tool album in melis log module.
+     */
+    private function melisLog($app,$title,$message,$success,$typeCode,$itemId){
+        $logSrv = $app['melis.services']->getService("MelisCoreLogService");
+        $logSrv->saveLog($title, $message, $success, $typeCode, $itemId);
     }
 }
