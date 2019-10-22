@@ -6,6 +6,7 @@ use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class SilexDemoController implements ControllerProviderInterface {
 
@@ -53,9 +54,10 @@ class SilexDemoController implements ControllerProviderInterface {
     /**
      * @param Application $app
      * @param Request $request
-     * @return JsonResponse
+     * @return JsonResponse fetch the list of albums from melis DB for the data table.
      *
      * fetch the list of albums from melis DB for the data table.
+     * @throws \Exception
      */
     public function silexFetchAlbums(Application $app, Request $request){
 
@@ -84,21 +86,28 @@ class SilexDemoController implements ControllerProviderInterface {
         $searchableCols = $config['table']['searchables'] ?? [];
         // get data from the service
 
-        // fetching albums depending on the filters applied to the table
-        $qb = new \Doctrine\DBAL\Query\QueryBuilder($app['dbs']['melis']);
-        $qb->select("*");
-        $qb->from("melis_demo_album");
-        if (! empty($searchableCols) && !empty($search)){
-            foreach ($searchableCols as $idx => $col) {
-                $expr = $qb->expr();
-                $qb->orWhere($expr->like($col, "'%" . $search . "%'"));
+        try {
+            // fetching albums depending on the filters applied to the table
+            $qb = new \Doctrine\DBAL\Query\QueryBuilder($app['dbs']['melis']);
+            $qb->select("*");
+            $qb->from("melis_demo_album");
+            if (! empty($searchableCols) && !empty($search)){
+                foreach ($searchableCols as $idx => $col) {
+                    $expr = $qb->expr();
+                    $qb->orWhere($expr->like($col, "'%" . $search . "%'"));
+                }
             }
-        }
-        $qb->setFirstResult($start)
-            ->setMaxResults($length)
-            ->orderBy($selCol,$sortOrder);
+            $qb->setFirstResult($start)
+                ->setMaxResults($length)
+                ->orderBy($selCol,$sortOrder);
 
-        $data = $qb->execute()->fetchAll();
+            $data = $qb->execute()->fetchAll();
+
+        }catch (\Exception $err) {
+            // return error
+            throw new \Exception($err->getMessage());
+        }
+
 
         if (! empty($searchableCols) && !empty($search)) {
             $tmpDataCount = count($data);
@@ -154,20 +163,57 @@ class SilexDemoController implements ControllerProviderInterface {
     /**
      * @param Application $app
      * @param Request $request
-     * @return JsonResponse
+     * @return JsonResponse save the album either creating or editing
      *
      * save the album either creating or editing
+     * @throws \Exception
      */
     public function silexSaveAlbum(Application $app, Request $request) {
 
-        $message = "tr_meliscodeexamplesilex_tool_save_album_ko";
+        $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_save_album_ko");
+        $errors = [];
+
+        // post data
+        $album = array(
+            'alb_name' => !empty($request->get("alb_name")) ? $request->get("alb_name") : null,
+            'alb_song_num' => !empty($request->get("alb_song_num")) ? $request->get("alb_song_num") : null,
+            'alb_id' => !empty($request->get("alb_id")) ? $request->get("alb_id") : null
+        );
+
+        // validation
+        $constraint = new Assert\Collection(array(
+            'alb_name' => new Assert\NotBlank(),
+            'alb_song_num' => new Assert\NotBlank,
+            'alb_id' => new Assert\Positive()
+        ));
+        $validatorResults = $app['validator']->validate($album, $constraint);
+
+        // constructing validation result for melis compatibility
+        // format of validation report for melis below.
+        // array(
+        //     "input_name1" => "error message.",
+        //     "input_name2" => "error message.",
+        // )
+        foreach ($validatorResults as $validatorResult){
+            $errors[str_replace(['[',']'],"",$validatorResult->getPropertyPath())] = $validatorResult->getMessage();
+        }
 
         if(!empty($request->get("alb_id"))){
             // updating album
-            $title = $app['translator']->trans("tr_meliscodeexamplesilex_tool_new_album");
+            $title = $app['translator']->trans("tr_meliscodeexamplesilex_tool_edit_album");
+            if(!$errors)
+            {
+                try {
+                    $sql = "UPDATE melis_demo_album SET alb_name = :alb_name, alb_song_num = :alb_song_num WHERE alb_id = :alb_id";
+                    $success = $app['dbs']['melis']->executeUpdate($sql, $album);
+                }catch (\Exception $err) {
+                    // return error
+                    throw new \Exception($err->getMessage());
+                }
+            }else{
+                $success = 0;
+            }
 
-            $sql = "UPDATE melis_demo_album SET alb_name = ?, alb_song_num = ? WHERE alb_id = ?";
-            $success = $app['dbs']['melis']->executeUpdate($sql, array($request->get("alb_name"), $request->get("alb_song_num"), $request->get("alb_id")));
 
             if($success > 0){
                 $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_save_album_ok");
@@ -178,12 +224,18 @@ class SilexDemoController implements ControllerProviderInterface {
             $this->melisLog($app,$title,$message,$success,"SILEX_ALBUM_EDIT",$id);
         }else {
             // creating album
-            $title = $app['translator']->trans("tr_meliscodeexamplesilex_tool_edit_album");
-
-            $success = $app['dbs']['melis']->insert("melis_demo_album",array(
-                "alb_name" => $request->get("alb_name"),
-                "alb_song_num" => $request->get("alb_song_num")
-            ));
+            $title = $app['translator']->trans("tr_meliscodeexamplesilex_tool_new_album");
+            if(!$errors) {
+                try {
+                    unset($album['alb_id']);
+                    $success = $app['dbs']['melis']->insert("melis_demo_album", $album);
+                } catch (\Exception $err) {
+                    // return error
+                    throw new \Exception($err->getMessage());
+                }
+            }else{
+                $success = 0;
+            }
 
             if($success > 0){
                 $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_save_album_ok");
@@ -198,7 +250,7 @@ class SilexDemoController implements ControllerProviderInterface {
             "success" => $success,
             "title" => $title,
             "message" => $message,
-            "errors" => []
+            "errors" => $errors
         ));
 
     }
@@ -206,17 +258,23 @@ class SilexDemoController implements ControllerProviderInterface {
     /**
      * @param Application $app
      * @param Request $request
-     * @return JsonResponse
+     * @return JsonResponse fetching data of the album to be edited
      *
      * fetching data of the album to be edited
+     * @throws \Exception
      */
     public function silexEditAlbum(Application $app, Request $request) {
 
-        // fetching data of album to be deleted
-        $sql = 'SELECT * FROM melis_demo_album WHERE alb_id = :id';
-        $album = $app['dbs']['melis']->fetchAssoc($sql, array(
-            'id' => $request->get('id'),
-        ));
+        try{
+            // fetching data of album to be deleted
+            $sql = 'SELECT * FROM melis_demo_album WHERE alb_id = :id';
+            $album = $app['dbs']['melis']->fetchAssoc($sql, array(
+                'id' => $request->get('id'),
+            ));
+        }catch (\Exception $err) {
+            // return error
+            throw new \Exception($err->getMessage());
+        }
 
         $success = count($album) > 1 ? 1 : 0;
 
@@ -230,18 +288,24 @@ class SilexDemoController implements ControllerProviderInterface {
     /**
      * @param Application $app
      * @param Request $request
-     * @return JsonResponse
+     * @return JsonResponse fetching the album data to be deleted
      *
      * fetching the album data to be deleted
+     * @throws \Exception
      */
     public function silexDeleteAlbum(Application $app, Request $request) {
 
         $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_delete_album_ko");
         $title = $app['translator']->trans("tr_meliscodeexamplesilex_album_delete");
 
-        $success = $app['dbs']['melis']->delete("melis_demo_album",array(
-            "alb_id" => $request->get("id")
-        ));
+        try{
+            $success = $app['dbs']['melis']->delete("melis_demo_album",array(
+                "alb_id" => $request->get("id")
+            ));
+        }catch (\Exception $err) {
+            // return error
+            throw new \Exception($err->getMessage());
+        }
 
         if($success > 0){
             $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_delete_album_ok");
@@ -254,8 +318,7 @@ class SilexDemoController implements ControllerProviderInterface {
         return new JsonResponse(array(
             "success" => $success,
             "title" => $title,
-            "message" => $message,
-            "errors" => []
+            "message" => $message
         ));
 
     }
@@ -280,15 +343,21 @@ class SilexDemoController implements ControllerProviderInterface {
 
     /**
      * @param Application $app
-     * @return mixed
+     * @return mixed fetch album data from melis DB for the silex demo tool templating plugin
      *
      * fetch album data from melis DB for the silex demo tool templating plugin
+     * @throws \Exception
      */
     public function silexPlugin(Application $app) {
 
-        #using Melis Database;
-        $sql = "SELECT * FROM melis_demo_album ";
-        $albums = $app['dbs']['melis']->fetchAll($sql);
+        try {
+            #using Melis Database;
+            $sql = "SELECT * FROM melis_demo_album ";
+            $albums = $app['dbs']['melis']->fetchAll($sql);
+        }catch (\Exception $err) {
+            // return error
+            throw new \Exception($err->getMessage());
+        }
 
         return $app['twig']->render('plugin.template.html.twig',array("albums" => $albums));
     }
