@@ -1,6 +1,7 @@
 <?php
 namespace MelisPlatformFrameworkSilexDemoToolLogic\Controllers;
 
+use MelisCore\Service\MelisCoreFlashMessengerService;
 use MelisPlatformFrameworkSilex\Service\MelisPlatformToolSilexService;
 use Silex\Api\ControllerProviderInterface;
 use Silex\Application;
@@ -172,6 +173,7 @@ class SilexDemoController implements ControllerProviderInterface {
 
         $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_save_album_ko");
         $errors = [];
+        $icon = MelisCoreFlashMessengerService::WARNING;
 
         // post data
         $album = array(
@@ -217,11 +219,14 @@ class SilexDemoController implements ControllerProviderInterface {
 
             if($success > 0){
                 $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_save_album_ok");
+                $icon = MelisCoreFlashMessengerService::INFO;
                 $success = 1;
             }
 
             $id = $request->get("alb_id");
             $this->melisLog($app,$title,$message,$success,"SILEX_ALBUM_EDIT",$id);
+            $this->melisNotification($app,$title,$message,$icon);
+
         }else {
             // creating album
             $title = $app['translator']->trans("tr_meliscodeexamplesilex_tool_new_album");
@@ -239,11 +244,14 @@ class SilexDemoController implements ControllerProviderInterface {
 
             if($success > 0){
                 $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_save_album_ok");
+                $icon = MelisCoreFlashMessengerService::INFO;
                 $success = 1;
             }
 
             $id = $app['dbs']['melis']->lastInsertId();
             $this->melisLog($app,$title,$message,$success,"SILEX_ALBUM_CREATE",$id);
+            $this->melisNotification($app,$title,$message,$icon);
+
         }
 
         return new JsonResponse(array(
@@ -297,6 +305,7 @@ class SilexDemoController implements ControllerProviderInterface {
 
         $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_delete_album_ko");
         $title = $app['translator']->trans("tr_meliscodeexamplesilex_album_delete");
+        $icon = MelisCoreFlashMessengerService::WARNING;
 
         try{
             $success = $app['dbs']['melis']->delete("melis_demo_album",array(
@@ -308,12 +317,16 @@ class SilexDemoController implements ControllerProviderInterface {
         }
 
         if($success > 0){
+
+            $icon = MelisCoreFlashMessengerService::INFO;
             $message = $app['translator']->trans("tr_meliscodeexamplesilex_tool_delete_album_ok");
             $success = 1;
+
         }
 
         $id = $request->get('id');
         $this->melisLog($app,$title,$message,$success,"SILEX_ALBUM_CREATE",$id);
+        $this->melisNotification($app,$title,$message,$icon);
 
         return new JsonResponse(array(
             "success" => $success,
@@ -363,17 +376,32 @@ class SilexDemoController implements ControllerProviderInterface {
     }
 
     /**
-     * @param $app Application silex application
-     * @param $title string log title
-     * @param $message string log message
-     * @param $success string action status
-     * @param $typeCode string action log code
-     * @param $itemId int id of the modified or created data
+     * @param Application $app silex application
+     * @param string $title log title
+     * @param string $message string log message
+     * @param string $success action status
+     * @param string $typeCode action log code
+     * @param int $itemId id of the modified or created data
      *
      * logs action made in silex demo tool album in melis log module.
      */
     private function melisLog($app,$title,$message,$success,$typeCode,$itemId){
         $logSrv = $app['melis.services']->getService("MelisCoreLogService");
         $logSrv->saveLog($title, $message, $success, $typeCode, $itemId);
+    }
+
+    /**
+     * @param Application $app
+     * @param string $title
+     * @param string $message
+     * @param string $icon
+     *
+     *
+     * add action made to the melis notification.
+     */
+    private function melisNotification($app, $title,$message,$icon = MelisCoreFlashMessengerService::INFO){
+
+        $flashMessenger =  $app['melis.services']->getService('MelisCoreFlashMessenger');
+        $flashMessenger->addToFlashMessenger($title, $message, $icon);
     }
 }
