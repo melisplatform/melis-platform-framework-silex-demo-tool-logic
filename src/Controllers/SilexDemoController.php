@@ -201,13 +201,25 @@ class SilexDemoController implements ControllerProviderInterface {
         }
 
         if(!empty($request->get("alb_id"))){
+
             // updating album
             $title = $app['translator']->trans("tr_meliscodeexamplesilex_tool_edit_album");
-            if(!$errors)
+            if(empty($errors))
             {
                 try {
-                    $sql = "UPDATE melis_demo_album SET alb_name = :alb_name, alb_song_num = :alb_song_num WHERE alb_id = :alb_id";
-                    $success = $app['dbs']['melis']->executeUpdate($sql, $album);
+                    $id = $album["alb_id"];
+                    unset($album["alb_id"]);
+
+                    $qb = new \Doctrine\DBAL\Query\QueryBuilder($app['dbs']['melis']);
+                    $qb->update("melis_demo_album");
+
+                    foreach($album as $key => $alb)
+                        $qb->set($key,"'".$alb."'");
+
+                    $qb->where("alb_id =".$id);
+                    $qb->execute();
+
+                    $success = 1;
                 }catch (\Exception $err) {
                     // return error
                     throw new \Exception($err->getMessage());

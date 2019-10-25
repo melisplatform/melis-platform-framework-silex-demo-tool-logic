@@ -22,7 +22,7 @@
                                                 <div class="form-group ">
                                                     <input type="hidden" class="form-control" name="alb_id"
                                                            id="alb_id" hidden
-                                                           value="{% if alb.alb_id is defined and alb.alb_id %} {{ alb.alb_id }} {% endif %}">
+                                                           {% if alb.alb_id is defined and alb.alb_id %} value="{{ alb.alb_id }}" {% endif %}>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="alb_name">
@@ -32,7 +32,8 @@
                                                            data-original-title="{{ 'tr_meliscodeexamplesilex_album_title'|trans }}"></i>
                                                     </label>
                                                     <input type="text" class="form-control" name="alb_name"
-                                                           id="alb_name" placeholder="{{ 'tr_meliscodeexamplesilex_album_title'|trans }}" value="{% if alb.alb_name is defined and alb.alb_name %} {{ alb.alb_name }} {% endif %}">
+                                                           id="alb_name" placeholder="{{ 'tr_meliscodeexamplesilex_album_title'|trans }}"
+                                                            {% if alb.alb_name is defined and alb.alb_name %} value="{{ alb.alb_name }}" {% endif %}>
                                                 </div>
                                                 <div class="form-group">
                                                     <label for="alb_song_num">
@@ -42,7 +43,8 @@
                                                            data-original-title="{{ 'tr_meliscodeexamplesilex_album_songs'|trans }}"></i>
                                                     </label>
                                                     <input type="text" class="form-control" name="alb_song_num"
-                                                           id="alb_song_num" placeholder="{{ 'tr_meliscodeexamplesilex_album_songs'|trans }}" value="{% if alb.alb_song_num is defined and alb.alb_song_num %} {{ alb.alb_song_num }} {% endif %}">
+                                                           id="alb_song_num" placeholder="{{ 'tr_meliscodeexamplesilex_album_songs'|trans }}"
+                                                            {% if alb.alb_song_num is defined and alb.alb_song_num %} value="{{ alb.alb_song_num }}" {% endif %}>
                                                 </div>
                                                 <div align="right">
                                                     <button data-dismiss="modal" class="btn btn-danger pull-left">
