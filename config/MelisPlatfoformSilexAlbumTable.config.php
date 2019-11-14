@@ -47,8 +47,8 @@ return array(
             'alb_id','alb_name','alb_song_num', 'alb_date'
         ),
         'actionButtons' => array(
-            'edit' => '<button class="btn btn-success btn_meliscodeexamplesilex_edit" title="Edit"><i class="fa fa-pencil"></i></button>',
-            'delete' => '<button class="btn btn-danger btn_meliscodeexamplesilex_delete" title="Delete"><i class="fa fa-times"></i></button>'
+            'edit' => '<button class="btn btn-success btn_meliscodeexamplesilex_edit"><i class="fa fa-pencil"></i></button>',
+            'delete' => '<button class="btn btn-danger btn_meliscodeexamplesilex_delete"><i class="fa fa-times"></i></button>'
         ),
     ),
 );
