@@ -43,13 +43,12 @@ class SilexDemoController implements ControllerProviderInterface {
         //getting config
         $config = include_once __DIR__."/../../config/MelisPlatfoformSilexAlbumTable.config.php";
 
-        //instantiating the class which contains the modified function for configuring the Data Table in Silex
-        $melisPlatformToolSilexSvc = new MelisPlatformToolSilexService($app);
+        //Translate column names
+        foreach ($config['table']['columns'] as $key => $column){
+            $config['table']['columns'][$key]['text'] = $app['translator']->trans($column["text"]);
+        }
 
-        //This will output the JS script for the that will target the Table in the twig template and turn it into a Data Table similar  to melis modules.
-        $dataTableScript = $melisPlatformToolSilexSvc->getDataTableConfiguration($config['table'],"#silexDemoToolAlbumTable",false,null,['order' => '[[ 0, "desc" ]]']);
-
-        return $app['twig']->render('demo.template.html.twig',array("langs" => $langs, "dataTableScript" => $dataTableScript));
+        return $app['twig']->render('demo.template.html.twig',array("langs" => $langs, "silexTableConfig" => $config['table']));
     }
 
     /**
