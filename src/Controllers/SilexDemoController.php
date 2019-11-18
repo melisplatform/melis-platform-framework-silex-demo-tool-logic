@@ -185,7 +185,7 @@ class SilexDemoController implements ControllerProviderInterface {
         $constraint = new Assert\Collection(array(
             'alb_name' => new Assert\NotBlank(),
             'alb_song_num' => new Assert\NotBlank,
-            'alb_id' => new Assert\Positive()
+            'alb_id' => new Assert\Type('integer')
         ));
         $validatorResults = $app['validator']->validate($album, $constraint);
 
@@ -195,6 +195,7 @@ class SilexDemoController implements ControllerProviderInterface {
         //     "input_name1" => "error message.",
         //     "input_name2" => "error message.",
         // )
+
         foreach ($validatorResults as $validatorResult){
             $errors[str_replace(['[',']'],"",$validatorResult->getPropertyPath())] = $validatorResult->getMessage();
         }
