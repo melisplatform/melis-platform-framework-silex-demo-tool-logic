@@ -30,4 +30,5 @@
         'alb_song_num' => 'Chansons',
         'alb_name' => 'Titre',
         'alb_id' => 'ID',
+        'tr_meliscoeexamplesilex_songs_validator_msg' => 'Cette valeur doit être de type numérique.',
     ];

@@ -29,4 +29,5 @@
         'alb_song_num' => 'Songs',
         'alb_name' => 'Title',
         'alb_id' => 'ID',
+        'tr_meliscoeexamplesilex_songs_validator_msg' => 'This value must be of numeric type.',
     ];

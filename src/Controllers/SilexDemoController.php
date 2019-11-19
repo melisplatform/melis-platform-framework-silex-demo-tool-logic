@@ -184,7 +184,7 @@ class SilexDemoController implements ControllerProviderInterface {
         // validation
         $constraint = new Assert\Collection(array(
             'alb_name' => new Assert\NotBlank(),
-            'alb_song_num' => array(new Assert\NotBlank, new Assert\Type('numeric')),
+            'alb_song_num' => array(new Assert\NotBlank, new Assert\Type(array('type'=>'numeric','message' => 'tr_meliscoeexamplesilex_songs_validator_msg'))),
             'alb_id' => new Assert\Type('numeric')
         ));
         $validatorResults = $app['validator']->validate($album, $constraint);
@@ -197,7 +197,7 @@ class SilexDemoController implements ControllerProviderInterface {
         // )
 
         foreach ($validatorResults as $validatorResult){
-            $errors[str_replace(['[',']'],"",$validatorResult->getPropertyPath())] = [$validatorResult->getMessage(),"label" => $app['translator']->trans(str_replace(['[',']'],"",$validatorResult->getPropertyPath()))];
+            $errors[str_replace(['[',']'],"",$validatorResult->getPropertyPath())] = [$app['translator']->trans($validatorResult->getMessage()),"label" => $app['translator']->trans(str_replace(['[',']'],"",$validatorResult->getPropertyPath()))];
         }
 
         if(!empty($request->get("alb_id"))){
