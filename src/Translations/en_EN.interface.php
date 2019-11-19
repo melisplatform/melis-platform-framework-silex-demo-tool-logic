@@ -26,4 +26,7 @@
         'tr_meliscodeexamplesilex_action' => 'Action',
         'tr_meliscodeexamplesilex_save' => 'Save',
         'tr_meliscodeexamplesilex_close' => 'Close',
+        'alb_song_num' => 'Songs',
+        'alb_name' => 'Title',
+        'alb_id' => 'ID',
     ];

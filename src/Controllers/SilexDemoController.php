@@ -184,20 +184,20 @@ class SilexDemoController implements ControllerProviderInterface {
         // validation
         $constraint = new Assert\Collection(array(
             'alb_name' => new Assert\NotBlank(),
-            'alb_song_num' => new Assert\NotBlank,
-            'alb_id' => new Assert\Type('integer')
+            'alb_song_num' => array(new Assert\NotBlank, new Assert\Type('numeric')),
+            'alb_id' => new Assert\Type('numeric')
         ));
         $validatorResults = $app['validator']->validate($album, $constraint);
 
         // constructing validation result for melis compatibility
         // format of validation report for melis below.
         // array(
-        //     "input_name1" => "error message.",
-        //     "input_name2" => "error message.",
+        //     "input_name1" => [0 => "error message.", "label" => "input_nam1_label"],
+        //     "input_name2" => [0 => "error message.", "label" => "input_nam1_label"],
         // )
 
         foreach ($validatorResults as $validatorResult){
-            $errors[str_replace(['[',']'],"",$validatorResult->getPropertyPath())] = $validatorResult->getMessage();
+            $errors[str_replace(['[',']'],"",$validatorResult->getPropertyPath())] = [$validatorResult->getMessage(),"label" => $app['translator']->trans(str_replace(['[',']'],"",$validatorResult->getPropertyPath()))];
         }
 
         if(!empty($request->get("alb_id"))){

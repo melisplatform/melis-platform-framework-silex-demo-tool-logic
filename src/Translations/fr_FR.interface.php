@@ -27,4 +27,7 @@
         'tr_meliscodeexamplesilex_action' => 'Action',
         'tr_meliscodeexamplesilex_save' => 'Enregistrer',
         'tr_meliscodeexamplesilex_close' => 'Annuler',
+        'alb_song_num' => 'Chansons',
+        'alb_name' => 'Titre*',
+        'alb_id' => 'ID',
     ];
