@@ -7,6 +7,7 @@
         'tr_meliscodeexamplesilex_lang_name' => 'Name',
         'tr_meliscodeexamplesilex_album_id' => 'ID',
         'tr_meliscodeexamplesilex_album_title' => 'Title',
+	 'tr_meliscodeexamplesilex_album_title tooltip' => 'Title of the album',
         'tr_meliscodeexamplesilex_album_date' => 'Date',
         'tr_meliscodeexamplesilex_album_songs' => 'Songs',
         'tr_meliscodeexamplesilex_album_songs tooltip' => 'Number of songs in the album',
